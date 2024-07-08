@@ -1,93 +1,139 @@
-# Campus_Space_and_Energy
+# rest-api-docker-compose
+Example of using docker-compose to orchestrate deployments and interconnections between multiple containers. In this projecty we have a FastAPI web container, a Postgres database container, and a PgAdmin container.
+
+The FastAPI container can call the postgres database container to search and store information
+The PgAdmin container provides a web admin interface to the Postgres container (so it talks to the Postgres database container)
+
+The project also illustrates using gitlab's continuous integtration/continuous deploy feature to automate builds and deploys into two different environments. The 'main' branch of this project dropys to the 'production' server when there is a commit pushed to main. The 'development branch builds and deploys to a development server when commits are pushed to the development branch.
+
+## Buiding and running via Gitlab CI/CD
+
+When a commit happens to either of the branches of this project, gitlab looks at the .gitlab-ci.yml script to know what CI/CD pipelines to run.
+
+To run the CI/CD script, gitlab uses 'gitlab-runners' that you have installed and configured on your servers to execute the commands in the .gitlab-ci.yml script. The script uses tags associated with the runners' configuration to differentiate between the production and development runners and servers.
+
+When triggered by a push to the repository, the gitlab runner first pulls a copy of the code from the git repository for the branch, then runs the 'before_script' section of the .gitlab-ci.yml script, followed by the steps for each of the stages. We can associate steps in the stages of a CI/CD script with a specific branch of the project; this is why you see "environment" and "only" items in the task descriptions in .gitlab-ci.yml script.
+
+Most of the real work of building and running the containers is handled by the shell scripts "build-test", "run-test", "build-production", and "run-production". Here we take advantage of docker-compose top orcheatrate builds and deploys.
+
+## docker-compose orchestration
+
+There are two files that define the containers, how they interoperate, and how they are built: "docker-compose-production.yml" and "docker-compose-development.yml". In these files are descriptions of the services (pgdatabase, pgadmin, web) their4 configuration, storage, and interdependencies.
 
 
+## setting up gitlab-runners
 
-## Getting started
+``````
+     # install gitlab-runner 
+     curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh" | sudo bash
+     sudo apt-get install -y gitlab-runner
+	 
+	 # setup the gitlab-runner user with sudo rights
+	 sudo su root
+	 echo "#rules for gitlab-runner" > /etc/sudoers.d/90-gitlab-runner
+	 echo "gitlab-runner ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/90-gitlab-runner
+	 echo "" >> /etc/sudoers.d/90-gitlab-runner
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+	 # now type <control-d> to exit the 'sudo su root' context
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+``````
 
-## Add your files
+ After you have installed the gitlab runner, you can associate it with your project by registering it
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
 
-```
-cd existing_repo
-git remote add origin https://gitlab.oit.duke.edu/dkb34/campus_space_and_energy.git
-git branch -M main
-git push -uf origin main
-```
+## other misc configuration
 
-## Integrate with your tools
+We want to run the application under a generic user rather than your personal account. There is already a generic user on all VCM linux VMs named 'vcm' -- this is the user the CI/CD script assumes you will use.
 
-- [ ] [Set up project integrations](https://gitlab.oit.duke.edu/dkb34/campus_space_and_energy/-/settings/integrations)
 
-## Collaborate with your team
+``````
+	 # on the development VM, create a directory where will will keep the development branch
+	 mkdir /home/vcm/development
+	 cd /home/vcm/development
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+	 # on the production VM, create a directory where will will keep the production branch
+	 mkdir /home/vcm/production
+	 cd /home/vcm/production
+``````
 
-## Test and Deploy
+We do not want to store sensitive configuration info in this gitlab project, so you will also need to create a configs directory holding a file named 'env' which the CI/CD script copies into place when building the containers.
 
-Use the built-in continuous integration in GitLab.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+``````
+	 # on both the development and productionVMs, create a configs directory 
+	 mkdir /home/vcm/configs
+     
+``````
 
-***
 
-# Editing this README
+ Inside the /home/vcm/configs directory you will need and 'env' file that holds some important settings. Here is an example
+ 
+ 
+``````
+	 POSTGRES_USER=postgres
+	 POSTGRES_PASSWORD=change-this-password
+	 POSTGRES_DB=postgres
+	 # pagadmin login info
+	 PGADMIN_DEFAULT_EMAIL=your-netid-goes-here@duke.edu
+	 PGADMIN_DEFAULT_PASSWORD=change-this-password
+	 # leave the PGADMIN_LISTEN_PORT set to 80, the docker-compose scripts assume this is the setting
+	 PGADMIN_LISTEN_PORT=80
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+``````
+ 
+## connecting to the components
 
-## Suggestions for a good README
+- the PgAdmin container can be accessed at http://your-vcm-server.vm.duke.edu:8090/
+-- login using the PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD settings from your env file
+- FastAPI is running at http://your-vcm-server.vm.duke.edu:8080/
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+From the linux command line, you can verify that the web container where FastAPI runs can connect to the Postgres container with the postgres command line client (psql) by first starting a bash shell inside the like this
 
-## Name
-Choose a self-explaining name for your project.
+``````
+	 vcm@vcm-41377:~/configs$ sudo docker ps
+	 CONTAINER ID   IMAGE                   COMMAND                  CREATED          STATUS          PORTS                                            NAMES
+	 dfff007759b2   helix-api               "fastapi run app/mai…"   42 minutes ago   Up 42 minutes   0.0.0.0:8080->8080/tcp, :::8080->8080/tcp        development-web-1
+	 812e3f1f1a75   dpage/pgadmin4:latest   "/entrypoint.sh"         42 minutes ago   Up 42 minutes   443/tcp, 0.0.0.0:8090->80/tcp, :::8090->80/tcp   development-pgadmin-1
+	 f3310a82ce7b   postgres:16             "docker-entrypoint.s…"   42 minutes ago   Up 42 minutes   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp        development-pgdatabase-1
+	 vcm@vcm-41377:~/configs$ sudo docker exec -it dfff007759b2 bash
+	 jovyan@dfff007759b2:/$ psql postgresql://postgres:change-this-password@pgdatabase/
+	 psql (15.6 (Debian 15.6-0+deb12u1), server 16.3 (Debian 16.3-1.pgdg120+1))
+	 WARNING: psql major version 15, server major version 16.
+	          Some psql features might not work.
+	 Type "help" for help.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+	 postgres=# \l
+	                                                 List of databases
+	    Name    |  Owner   | Encoding |  Collate   |   Ctype    | ICU Locale | Locale Provider |   Access privileges   
+	 -----------+----------+----------+------------+------------+------------+-----------------+-----------------------
+	  postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |            | libc            | 
+	  template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 |            | libc            | =c/postgres          +
+	            |          |          |            |            |            |                 | postgres=CTc/postgres
+	  template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 |            | libc            | =c/postgres          +
+	            |          |          |            |            |            |                 | postgres=CTc/postgres
+	 (3 rows)
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+	 postgres=# 
+     
+``````
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+If you had created a database named 'meow' (something you might do with PgAdmin), some inside the web container this python code would establish a connections
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+``````
+	 import psycopg2
+	 connection = psycopg2.connect(user="postgres",  # just use your connection info
+	                               password="change-this-password",
+	                               host="pgdatabase",
+	                               port="5432",
+	                               database="meow")
+     
+``````
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+In addition to psycopg2, sqlalchemy is another popular approach for accessing SQL database from python... 
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+  
+## To do
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Actually hook up FastAPI web code to the database and save something...
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
