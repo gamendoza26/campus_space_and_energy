@@ -1,23 +1,65 @@
+before_script:
+  - hostname
+  - whoami
+  - sudo docker --version
+  - pwd; ls -la
+
+
 stages:
-  - build
-  - deploy
+  - build_test
+  - deploy_test
+  - build_production
+  - deploy_production
 
-build:
-  stage: build
-  script:
-    - docker-compose -f docker-compose-development.yml build
 
-deploy:
-  stage: deploy
+build_test:
+  tags:
+    - vcm-41372
+  stage: build_test
   script:
-    - docker-compose -f docker-compose-development.yml up -d
+    - echo "Building the app in vcm-41377"
+    - ./build-test
+  environment:
+    name: development
   only:
-    - development
+  - development
 
-deploy-production:
-  stage: deploy
+
+deploy_test:
+  tags:
+    - vcm-41372
+  stage: deploy_test
   script:
-    - docker-compose -f docker-compose-production.yml up -d
+    - echo "Deploy test on vcm-41377"
+    - sudo /home/vcm/development/run-test
+  environment:
+    name: development
   only:
-    - main
+  - development
 
+
+build_production:
+  tags:
+    - vcm-41375
+  stage: build_production
+  script:
+    - echo "Building the app in vcm-41378"
+    - ./build-production
+  environment:
+    name: main
+  only:
+  - main
+
+
+deploy_production:
+  tags:
+    - vcm-41375
+  stage: deploy_production
+  script:
+    - echo "Deploy production on vcm-41378"
+    - sudo /home/vcm/production/run-production
+  environment:
+    name: main
+  when: manual
+  only:
+  - main
