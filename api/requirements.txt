@@ -11,4 +11,10 @@ loguru==0.7.2
 orjson==3.9.15
 python-dotenv==1.0.1
 Secweb==1.9.1
-psycopg2
+psycopg2i
+python-multipart
+folium
+pandas
+branca
+pandas_geojson
+matplotlib
