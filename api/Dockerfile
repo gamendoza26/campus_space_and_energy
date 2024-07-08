@@ -4,7 +4,7 @@ FROM python:3.9
 LABEL maintainer1="Mark McCahill <mccahill@duke.edu>"
 LABEL maintainer2="Desmond Boateng <dkb34@duke.edu>"
 LABEL maintainer3="Gabriel Mendoza <gam70@duke.edu>"
-LABEL maintainer4="Shriya Minocha <sm770@duke.edu>"
+LABEL maintainer4="Shriya Minocha <sm997@duke.edu>"
 LABEL maintainer5="Adeildo Vieira <av259@duke.edu>"
 
 # Define build arguments
