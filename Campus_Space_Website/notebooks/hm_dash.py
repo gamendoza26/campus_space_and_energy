@@ -9,6 +9,7 @@ from IPython.display import display, clear_output
 date_picker = widgets.DatePicker(description='Select Date')
 time_picker = widgets.TimePicker(description='Select Time')
 generate_button = widgets.Button(description='Generate Map', button_style='success')
+generate_graph_button.style.button_color = '#00539B'
 
 output = widgets.Output()
 
