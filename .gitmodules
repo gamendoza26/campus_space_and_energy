@@ -1,0 +1,3 @@
+[submodule "website-front-end/website-front-end/Campus_Space_Website"]
+	path = website-front-end/website-front-end/Campus_Space_Website
+	url = https://gitlab.oit.duke.edu/codeplus-campus-space-and-energy/shriya/week-8-campus-space-website.git
