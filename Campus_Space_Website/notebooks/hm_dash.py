@@ -8,7 +8,8 @@ from IPython.display import display, clear_output
 # Widgets for user input
 date_picker = widgets.DatePicker(description='Select Date')
 time_picker = widgets.TimePicker(description='Select Time')
-generate_button = widgets.Button(description='Generate Map', button_style='success')
+generate_button = widgets.Button(description='Generate Graph', button_style='success')
+generate_button.style.button_color = '#00539B'
 
 output = widgets.Output()
 
@@ -20,7 +21,7 @@ def display_heatmap(selected_date, selected_time):
     DAY_FILTER = selected_date.strftime('%Y-%m-%d')
     TIME_FILTER = selected_time.strftime('%H:%M')
 
-    geojson_file = "./resources/bostock1_floorplan.geojson"
+    geojson_file = "bostock1_floorplan.geojson"
 
     ap_dict = {
         "1-bostock-128-ap3802i-rc-1": (36.00303114914303, -78.93810780073801),
@@ -41,7 +42,7 @@ def display_heatmap(selected_date, selected_time):
         "16-bostock-121-ap3802i-rc-1": (36.0029600, -78.9386146),
     }
 
-    df = pd.read_csv('./resources/june11_july3_bostock.csv')
+    df = pd.read_csv('june11_july3_bostock.csv')
     df['_time'] = pd.to_datetime(df['_time']).dt.tz_localize(None)
     df = df.sort_values(by='_time')
 
