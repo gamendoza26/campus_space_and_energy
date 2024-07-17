@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String, DateTime
@@ -5,10 +7,17 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 
+load_dotenv()  # Load environment variables from .env file
+
 app = FastAPI()
 
 # Database configuration
-SQLALCHEMY_DATABASE_URL = "postgresql://dkb34:nana7kwame9@localhost/co2_data_db"
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+
+SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -41,6 +50,17 @@ async def create_co2_data(data: CO2Data):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error saving data: {str(e)}")
+    finally:
+        db.close()
+
+@app.get("/co2_data/")
+async def get_co2_data(limit: int = 10):
+    db = SessionLocal()
+    try:
+        results = db.query(CO2Reading).limit(limit).all()
+        return [{"id": r.id, "timestamp": r.timestamp, "room": r.room, "co2": r.co2} for r in results]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving data: {str(e)}")
     finally:
         db.close()
 
