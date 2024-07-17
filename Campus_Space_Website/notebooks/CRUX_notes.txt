@@ -1,0 +1,25 @@
+NOTES FROM CRUX:
+Homepage:
+- Put the title up in the nav bar instead of home
+- BIG CALL TO ACTION BUTTON
+    - Potentially also have it in the nav
+    - Give people on the website something to click on right away
+- Maybe put the photo to the side and have a white background
+    - A bit more breathing room
+- In the dashboard:
+
+Mission:
+- Make sure “CLIMATE COMMITMENT in it for life” in alt text
+- Cut “By tracking…” down to 2/3 of the page
+- Images: Keep in mind the size with the words once we put them in
+    - Maybe use copilot: https://oit.duke.edu/service/microsoft-copilot/
+
+About:
+- At the top say 
+    - “We use Wifi and CO2 data to ….” as opposed to making them scroll
+
+Combine About and Mission
+- Maybe add a Meet the Team page
+
+Track Occupancy:
+- Create a 2-tab page where you can choose which types of Wifi visualization you want
