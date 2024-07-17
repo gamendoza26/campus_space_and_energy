@@ -13,7 +13,7 @@ generate_button.style.button_color = '#00539B'
 
 output = widgets.Output()
 
-def display_options():
+def display_co2_options():
     generate_button.on_click(on_generate_button_clicked)
     display(date_picker, time_picker, generate_button, output)
 
