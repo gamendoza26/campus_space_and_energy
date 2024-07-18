@@ -58,11 +58,19 @@ def display_linear_graph(start_date, start_time, end_date, end_time, interval):
             print("Invalid date or time format. Please use 'YYYY-MM-DD' for date and 'HH:MM' for time.")
         return
 
+
+    # Make sure that times are formatted correctly
     interval_timedelta = pd.Timedelta(hours=interval)
     if end_datetime <= start_datetime + interval_timedelta:
         with output:
             print("End date and time must be at least one interval after start date and time.")
         return
+
+    if start_datetime < pd.to_datetime('2024-06-11') or end_datetime > pd.to_datetime('2024-07-03'):
+        with output:
+            print("Error: Date is outside the allowed range of available data. Please select a date between June 11 and July 3.")
+        return
+
     
     # Read the data
     df = pd.read_csv('./resources/june11_july3_bostock.csv')
