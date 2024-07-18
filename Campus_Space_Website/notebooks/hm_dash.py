@@ -57,7 +57,7 @@ def display_heatmap(selected_date, selected_time):
     
     if user_date < pd.to_datetime('2024-06-11') or user_date > pd.to_datetime('2024-07-03'):
         with output:
-            print("Error: Date is outside the allowed range. Please select a date between June 11 and July 3.")
+            print("Error: Date is outside the allowed range of available data. Please select a date between June 11 and July 3.")
         return
     
     # Calculate the time range
