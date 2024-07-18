@@ -152,5 +152,3 @@ In addition to psycopg2, sqlalchemy is another popular approach for accessing SQ
 
 Actually hook up FastAPI web code to the database and save something...
 
-
-TEST TEST TEST
