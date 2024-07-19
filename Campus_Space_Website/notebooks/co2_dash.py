@@ -28,7 +28,7 @@ def process_files(file_list, timestamp_col, date_format=None):
 def create_visualizations(date, room_volume):
     # Lists of file paths and date formats
     occupancy_files = [
-        ('campus_space_and_energy/Campus_Space_Website/notebooks/CO2 occupancy data/20th_CO2_occupancy_data.csv', '%m/%d/%Y %H:%M'),
+        ('campus_space_and_energy/Campus_Space_Website/notebooks/resources/CO2 occupancy data/20th_CO2_occupancy_data.csv', '%m/%d/%Y %H:%M'),
         ('campus_space_and_energy/Campus_Space_Website/notebooks/CO2 occupancy data/24th_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
         ('campus_space_and_energy/Campus_Space_Website/notebooks/CO2 occupancy data/25th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S')
     ]
