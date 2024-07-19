@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import ipywidgets as widgets
 from IPython.display import display, clear_output
+import os
 
+# Function to process CSV files
 def process_files(file_list, timestamp_col, date_format=None):
     data_frames = []
     for file in file_list:
@@ -22,6 +24,7 @@ def process_files(file_list, timestamp_col, date_format=None):
     combined_df = pd.concat(data_frames, ignore_index=True)
     return combined_df.sort_values(by=timestamp_col)
 
+# Function to create visualizations
 def create_visualizations(date, room_volume):
     # Lists of file paths and date formats
     occupancy_files = [
@@ -58,7 +61,13 @@ def create_visualizations(date, room_volume):
     merged_data['co2_avg'] = (merged_data['co2_pi1'] + merged_data['co2_pi2']) / 2
     merged_data['co2_avg_per_volume'] = merged_data['co2_avg'] / room_volume
 
-    # 1. Boxplot of CO2 concentration distribution by occupancy (using all data)
+    # Check if there is data for the selected date
+    selected_date = pd.to_datetime(date).date()
+    if not any(merged_data['timestamp'].dt.date == selected_date):
+        print(f"Sorry, we don't have data for {date}")
+        return
+
+    # Boxplot of CO2 concentration distribution by occupancy (using all data)
     plt.figure(figsize=(12, 6))
     sns.boxplot(x='count', y='co2_avg_per_volume', data=merged_data)
     plt.xlabel('Occupancy')
@@ -68,45 +77,43 @@ def create_visualizations(date, room_volume):
     plt.show()
 
     # Filter for the selected date for heatmap
-    selected_date = pd.to_datetime(date).date()
     filtered_data = merged_data[merged_data['timestamp'].dt.date == selected_date]
 
-    # 2. CO2 Heatmap (for the specified date)
-    if not filtered_data.empty:
-        pivot_data = filtered_data.pivot_table(
-            values='co2_avg_per_volume',
-            index=filtered_data['timestamp'].dt.floor('15min').dt.time,
-            columns=filtered_data['timestamp'].dt.hour,
-            aggfunc='mean'
-        )
-        plt.figure(figsize=(12, 8))
-        sns.heatmap(pivot_data, cmap='YlOrRd', cbar_kws={'label': 'Average CO2 per Volume (ppm/m^3)'})
-        plt.xlabel('Hour of Day')
-        plt.ylabel('15-Minute Interval')
-        plt.title(f'CO2 Levels Heatmap on {date}')
-        plt.tight_layout()
-        plt.show()
-    else:
-        print("Sorry, we don't have data for this day")
+    # CO2 Heatmap (for the specified date)
+    pivot_data = filtered_data.pivot_table(
+        values='co2_avg_per_volume', 
+        index=filtered_data['timestamp'].dt.floor('15min').dt.time, 
+        columns=filtered_data['timestamp'].dt.hour,
+        aggfunc='mean'
+    )
+    plt.figure(figsize=(12, 8))
+    sns.heatmap(pivot_data, cmap='YlOrRd', cbar_kws={'label': 'Average CO2 per Volume (ppm/m^3)'})
+    plt.xlabel('Hour of Day')
+    plt.ylabel('15-Minute Interval')
+    plt.title(f'CO2 Levels Heatmap on {date}')
+    plt.tight_layout()
+    plt.show()
 
 # Widgets for user input
-room_options = {'Room 133': 33.6475, 'Room 127': 334.40298596}
-room_selector = widgets.Dropdown(options=room_options, description='Select Room')
+room_selector = widgets.ToggleButtons(
+    options=[('Room 133', 33.6475), ('Room 127', 334.40298596)],
+    description='Select Room:'
+)
 date_picker = widgets.DatePicker(description='Select Date')
-generate_button = widgets.Button(description='Generate Graphs', button_style='success')
+generate_button = widgets.Button(description='Generate Graph', button_style='success')
+
 output = widgets.Output()
+
+def display_co2_options():
+    generate_button.on_click(on_generate_button_clicked)
+    display(room_selector, date_picker, generate_button, output)
 
 def on_generate_button_clicked(b):
     with output:
-        clear_output()
-        selected_room = room_selector.value
+        output.clear_output()
+        selected_room_volume = room_selector.value
         selected_date = date_picker.value
-        if selected_date:
-            create_visualizations(selected_date.strftime('%Y-%m-%d'), selected_room)
+        if selected_room_volume and selected_date:
+            create_visualizations(selected_date.strftime('%Y-%m-%d'), selected_room_volume)
         else:
-            print("Please select a date")
-
-generate_button.on_click(on_generate_button_clicked)
-
-# Display the widgets
-display(room_selector, date_picker, generate_button, output)
+            print("Please select both a room and a date.")
