@@ -28,19 +28,21 @@ def process_files(file_list, timestamp_col, date_format=None):
 def create_visualizations(date, room_volume):
     # Lists of file paths and date formats
     occupancy_files = [
-        ('./resources/CO2_occupancy_data/20th_CO2_occupancy_data.csv', '%m/%d/%Y %H:%M'),
-        ('./resources/CO2_occupancy_data/24th_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
-        ('./resources/CO2_occupancy_data/25th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S')
+        ('./resources/CO2_occupancy_data/Room_133/20th_CO2_occupancy_data.csv', '%m/%d/%Y %H:%M'),
+        ('./resources/CO2_occupancy_data/Room_133/24th_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
+        ('./resources/CO2_occupancy_data/Room_133/25th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S')
     ]
     co2_pi1_files = [
-        './resources/CO2_data/co2_data_24th_pi1.csv',
-        './resources/CO2_data_25th_pi1.csv',
-        './resources/CO2_data/co2_data_pi1.csv'
+        './resources/CO2_data/Room_133/co2_data_24th_pi1.csv',
+        './resources/CO2_data/Room_133/co2_25th_pi1.csv',
+        './resources/CO2_data/Room_133/co2_data_pi1.csv',
+        './resources/CO2_data/Room_133/co2_data_26th_pi1.csv'
     ]
     co2_pi2_files = [
-        './resources/CO2_data/co2_data_24th_pi2.csv',
-        './resources/CO2_data/co2_data_25th_pi2.csv',
-        './resources/CO2_data/co2_data.csv'
+        './resources/CO2_data/Room_133/co2_data_24th_pi2.csv',
+        './resources/CO2_data/Room_133/co2_data_25th_pi2.csv',
+        './resources/CO2_data/Room_133/co2_data.csv',
+        './resources/CO2_data/Room_133/co2_data_26th_pi2.csv'
     ]
 
     # Process occupancy files with their respective date formats
@@ -101,7 +103,7 @@ room_selector = widgets.ToggleButtons(
 )
 date_picker = widgets.DatePicker(description='Select Date')
 generate_button = widgets.Button(description='Generate Graph', button_style='success')
-
+generate_button.style.button_color = '#00539B'
 output = widgets.Output()
 
 def display_co2_options():
