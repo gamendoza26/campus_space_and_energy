@@ -30,11 +30,12 @@ def create_visualizations(date, room_volume):
     occupancy_files = [
         ('./resources/CO2_occupancy_data/Room_133/20th_CO2_occupancy_data.csv', '%m/%d/%Y %H:%M'),
         ('./resources/CO2_occupancy_data/Room_133/24th_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
-        ('./resources/CO2_occupancy_data/Room_133/25th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S')
+        ('./resources/CO2_occupancy_data/Room_133/25th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
+        ()
     ]
     co2_pi1_files = [
         './resources/CO2_data/Room_133/co2_data_24th_pi1.csv',
-        './resources/CO2_data/Room_133/co2_25th_pi1.csv',
+        './resources/CO2_data/Room_133/co2_data_25th_pi1.csv',
         './resources/CO2_data/Room_133/co2_data_pi1.csv',
         './resources/CO2_data/Room_133/co2_data_26th_pi1.csv'
     ]
