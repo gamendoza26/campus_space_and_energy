@@ -49,12 +49,12 @@ def create_visualizations(date, room, room_volume):
             ]
         },
         'Room 127': {
-            'occupancy_files': [ 
- # add the 127 files
+            'occupancy_files': [
+                # Add the 127 files
                 (''),
                 (''),
                 (''),
-                (''),
+                ('')
             ],
             'co2_pi1_files': [
                 '',
@@ -64,7 +64,7 @@ def create_visualizations(date, room, room_volume):
             ],
             'co2_pi2_files': [
                 '',
-               '',
+                '',
                 '',
                 './resources/CO2_data/Room_127/co2_data_26th_pi2.csv'
             ]
@@ -91,10 +91,19 @@ def create_visualizations(date, room, room_volume):
     merged_data['co2_avg'] = (merged_data['co2_pi1'] + merged_data['co2_pi2']) / 2
     merged_data['co2_avg_per_volume'] = merged_data['co2_avg'] / room_volume
 
+    # Boxplot of CO2 concentration distribution by occupancy (using all data)
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x='count', y='co2_avg_per_volume', data=merged_data)
+    plt.ylabel('Average CO2 per Volume (ppm/m^3)')
+    plt.xlabel('Occupancy')
+    plt.title('CO2 Concentration Distribution by Occupancy')
+    plt.tight_layout()
+    plt.show()
+
     # Check if there is data for the selected date
     selected_date = pd.to_datetime(date).date()
     if not any(merged_data['timestamp'].dt.date == selected_date):
-        print(f"Sorry, we don't have data for {date}")
+        print(f"To see the heatmap for a specific date, kindly check the description to see what days we have available data for each room")
         return
 
     # Filter for the selected date for heatmap
@@ -112,15 +121,6 @@ def create_visualizations(date, room, room_volume):
     plt.xlabel('Hour of Day')
     plt.ylabel('15-Minute Interval')
     plt.title(f'CO2 Levels Heatmap on {date}')
-    plt.tight_layout()
-    plt.show()
-
-    # Boxplot of CO2 concentration distribution by occupancy (using all data)
-    plt.figure(figsize=(12, 6))
-    sns.boxplot(y='count', x='co2_avg_per_volume', data=merged_data)
-    plt.ylabel('Occupancy')
-    plt.xlabel('Average CO2 per Volume (ppm/m^3)')
-    plt.title('CO2 Concentration Distribution by Occupancy')
     plt.tight_layout()
     plt.show()
 
@@ -148,3 +148,7 @@ def on_generate_button_clicked(b):
             create_visualizations(selected_date.strftime('%Y-%m-%d'), selected_room, selected_room_volume)
         else:
             print("Please select both a room and a date.")
+
+# Display the widgets for user interaction
+display_co2_options()
+
