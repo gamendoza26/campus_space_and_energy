@@ -51,22 +51,19 @@ def create_visualizations(date, room, room_volume):
         'Room 127': {
             'occupancy_files': [
                 # Add the 127 files
-                (''),
-                (''),
-                (''),
-                ('')
+                ('./resources/CO2_occupancy_data/Room_127/Rm_127_09th_July_occupancy.csv', '%m-%d-%Y %H:%M:%S'),
+                ('./resources/CO2_occupancy_data/Room_127/Rm_127_16th_July_occupancy.csv', '%m-%d-%Y %H:%M:%S'),
+                ('./resources/CO2_occupancy_data/Room_127/Rm_127_17th_July_occupancy.csv', '%m-%d-%Y %H:%M:%S')
             ],
             'co2_pi1_files': [
-                '',
-                '',
-                '',
-                ''
+                './resources/CO2_data/Room_127/co2_data_2024-07-09-pi1.csv',
+                './resources/CO2_data/Room_127/co2_data_2024-07-16-pi1.csv',
+                './resources/CO2_data/Room_127/co2_data_2024-07-17-pi1.csv'
             ],
             'co2_pi2_files': [
-                '',
-                '',
-                '',
-                './resources/CO2_data/Room_127/co2_data_26th_pi2.csv'
+                './resources/CO2_data/Room_127/co2_data_2024-07-09-pi2.csv',
+                './resources/CO2_data/Room_127/co2_data_2024-07-16-pi2.csv',
+                './resources/CO2_data/Room_127/co2_data_2024-07-17-pi2.csv'
             ]
         }
     }
