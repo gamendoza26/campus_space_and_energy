@@ -28,19 +28,19 @@ def process_files(file_list, timestamp_col, date_format=None):
 def create_visualizations(date, room_volume):
     # Lists of file paths and date formats
     occupancy_files = [
-        ('campus_space_and_energy/Campus_Space_Website/notebooks/resources/CO2 occupancy data/20th_CO2_occupancy_data.csv', '%m/%d/%Y %H:%M'),
-        ('campus_space_and_energy/Campus_Space_Website/notebooks/CO2 occupancy data/24th_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
-        ('campus_space_and_energy/Campus_Space_Website/notebooks/CO2 occupancy data/25th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S')
+        ('./resources/CO2 occupancy data/20th_CO2_occupancy_data.csv', '%m/%d/%Y %H:%M'),
+        ('./resources/CO2 occupancy data/24th_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
+        ('./resources/CO2 occupancy data/25th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S')
     ]
     co2_pi1_files = [
-        'CO2 data/co2_data_24th_pi1.csv',
-        'co2_data_25th_pi1.csv',
-        'CO2 data/co2_data_pi1.csv'
+        './resources/CO2 data/co2_data_24th_pi1.csv',
+        './resources/co2_data_25th_pi1.csv',
+        './resources/CO2 data/co2_data_pi1.csv'
     ]
     co2_pi2_files = [
-        'CO2 data/co2_data_24th_pi2.csv',
-        'CO2 data/co2_data_25th_pi2.csv',
-        'CO2 data/co2_data.csv'
+        './resources/CO2 data/co2_data_24th_pi2.csv',
+        './resources/CO2 data/co2_data_25th_pi2.csv',
+        './resources/CO2 data/co2_data.csv'
     ]
 
     # Process occupancy files with their respective date formats
