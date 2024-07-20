@@ -25,36 +25,63 @@ def process_files(file_list, timestamp_col, date_format=None):
     return combined_df.sort_values(by=timestamp_col)
 
 # Function to create visualizations
-def create_visualizations(date, room_volume):
+def create_visualizations(date, room, room_volume):
     # Lists of file paths and date formats
-    occupancy_files = [
-        ('./resources/CO2_occupancy_data/Room_133/20th_CO2_occupancy_data.csv', '%m/%d/%Y %H:%M'),
-        ('./resources/CO2_occupancy_data/Room_133/24th_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
-        ('./resources/CO2_occupancy_data/Room_133/25th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
-        ()
-    ]
-    co2_pi1_files = [
-        './resources/CO2_data/Room_133/co2_data_24th_pi1.csv',
-        './resources/CO2_data/Room_133/co2_data_25th_pi1.csv',
-        './resources/CO2_data/Room_133/co2_data_pi1.csv',
-        './resources/CO2_data/Room_133/co2_data_26th_pi1.csv'
-    ]
-    co2_pi2_files = [
-        './resources/CO2_data/Room_133/co2_data_24th_pi2.csv',
-        './resources/CO2_data/Room_133/co2_data_25th_pi2.csv',
-        './resources/CO2_data/Room_133/co2_data.csv',
-        './resources/CO2_data/Room_133/co2_data_26th_pi2.csv'
-    ]
+    room_files = {
+        'Room 133': {
+            'occupancy_files': [
+                ('./resources/CO2_occupancy_data/Room_133/20th_CO2_occupancy_data.csv', '%m/%d/%Y %H:%M'),
+                ('./resources/CO2_occupancy_data/Room_133/24th_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
+                ('./resources/CO2_occupancy_data/Room_133/25th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S'),
+                ('./resources/CO2_occupancy_data/Room_133/26th_Co2_occupancy_data - Sheet1.csv', '%m-%d-%Y %H:%M:%S')
+            ],
+            'co2_pi1_files': [
+                './resources/CO2_data/Room_133/co2_data_24th_pi1.csv',
+                './resources/CO2_data/Room_133/co2_data_25th_pi1.csv',
+                './resources/CO2_data/Room_133/co2_data_pi1.csv',
+                './resources/CO2_data/Room_133/co2_data_26th_pi1.csv'
+            ],
+            'co2_pi2_files': [
+                './resources/CO2_data/Room_133/co2_data_24th_pi2.csv',
+                './resources/CO2_data/Room_133/co2_data_25th_pi2.csv',
+                './resources/CO2_data/Room_133/co2_data.csv',
+                './resources/CO2_data/Room_133/co2_data_26th_pi2.csv'
+            ]
+        },
+        'Room 127': {
+            'occupancy_files': [ 
+ # add the 127 files
+                (''),
+                (''),
+                (''),
+                (''),
+            ],
+            'co2_pi1_files': [
+                '',
+                '',
+                '',
+                ''
+            ],
+            'co2_pi2_files': [
+                '',
+               '',
+                '',
+                './resources/CO2_data/Room_127/co2_data_26th_pi2.csv'
+            ]
+        }
+    }
+
+    files = room_files[room]
 
     # Process occupancy files with their respective date formats
     occupancy_data = []
-    for file, fmt in occupancy_files:
+    for file, fmt in files['occupancy_files']:
         occupancy_data.append(process_files([file], 'Time', fmt))
     occupancy = pd.concat(occupancy_data, ignore_index=True).sort_values(by='Time')
 
     # Process CO2 files
-    co2_pi1 = process_files(co2_pi1_files, 'timestamp')
-    co2_pi2 = process_files(co2_pi2_files, 'timestamp')
+    co2_pi1 = process_files(files['co2_pi1_files'], 'timestamp')
+    co2_pi2 = process_files(files['co2_pi2_files'], 'timestamp')
 
     # Merge data
     co2_data = pd.merge_asof(co2_pi1, co2_pi2, on='timestamp', suffixes=('_pi1', '_pi2'))
@@ -69,15 +96,6 @@ def create_visualizations(date, room_volume):
     if not any(merged_data['timestamp'].dt.date == selected_date):
         print(f"Sorry, we don't have data for {date}")
         return
-
-    # Boxplot of CO2 concentration distribution by occupancy (using all data)
-    plt.figure(figsize=(12, 6))
-    sns.boxplot(x='count', y='co2_avg_per_volume', data=merged_data)
-    plt.xlabel('Occupancy')
-    plt.ylabel('Average CO2 per Volume (ppm/m^3)')
-    plt.title('CO2 Concentration Distribution by Occupancy')
-    plt.tight_layout()
-    plt.show()
 
     # Filter for the selected date for heatmap
     filtered_data = merged_data[merged_data['timestamp'].dt.date == selected_date]
@@ -94,6 +112,15 @@ def create_visualizations(date, room_volume):
     plt.xlabel('Hour of Day')
     plt.ylabel('15-Minute Interval')
     plt.title(f'CO2 Levels Heatmap on {date}')
+    plt.tight_layout()
+    plt.show()
+
+    # Boxplot of CO2 concentration distribution by occupancy (using all data)
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(y='count', x='co2_avg_per_volume', data=merged_data)
+    plt.ylabel('Occupancy')
+    plt.xlabel('Average CO2 per Volume (ppm/m^3)')
+    plt.title('CO2 Concentration Distribution by Occupancy')
     plt.tight_layout()
     plt.show()
 
@@ -115,8 +142,9 @@ def on_generate_button_clicked(b):
     with output:
         output.clear_output()
         selected_room_volume = room_selector.value
+        selected_room = room_selector.label
         selected_date = date_picker.value
         if selected_room_volume and selected_date:
-            create_visualizations(selected_date.strftime('%Y-%m-%d'), selected_room_volume)
+            create_visualizations(selected_date.strftime('%Y-%m-%d'), selected_room, selected_room_volume)
         else:
             print("Please select both a room and a date.")
