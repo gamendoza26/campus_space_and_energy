@@ -100,7 +100,7 @@ def create_visualizations(date, room, room_volume):
     # Check if there is data for the selected date
     selected_date = pd.to_datetime(date).date()
     if not any(merged_data['timestamp'].dt.date == selected_date):
-        print(f"To see the heatmap for a specific date, kindly check the description to see what days we have available data for each room")
+        print(f"Selected date is not available: (Room 133) Select either 06/14, 06/24-25, or 06/26. (Room 127) Select either 07/09, 07/16, or 07/17.")
         return
 
     # Filter for the selected date for heatmap
@@ -124,7 +124,8 @@ def create_visualizations(date, room, room_volume):
 # Widgets for user input
 room_selector = widgets.ToggleButtons(
     options=[('Room 133', 33.6475), ('Room 127', 334.40298596)],
-    description='Select Room:'
+    description='Select Room:',
+    layout=widgets.Layout(width='auto', min_width='1000px')
 )
 date_picker = widgets.DatePicker(description='Select Date')
 generate_button = widgets.Button(description='Generate Graph', button_style='success')
@@ -147,5 +148,5 @@ def on_generate_button_clicked(b):
             print("Please select both a room and a date.")
 
 # Display the widgets for user interaction
-display_co2_options()
+# display_co2_options()
 
