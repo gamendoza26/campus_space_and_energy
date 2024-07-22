@@ -4,6 +4,7 @@ import seaborn as sns
 import ipywidgets as widgets
 from IPython.display import display, clear_output
 import os
+from datetime import datetime
 
 # Function to process CSV files
 def process_files(file_list, timestamp_col, date_format=None):
@@ -125,9 +126,9 @@ def create_visualizations(date, room, room_volume):
 room_selector = widgets.ToggleButtons(
     options=[('Room 133', 33.6475), ('Room 127', 334.40298596)],
     description='Select Room:',
-    layout=widgets.Layout(width='auto', min_width='1000px')
+    layout=widgets.Layout(width='auto', min_width='1000px'),
 )
-date_picker = widgets.DatePicker(description='Select Date')
+date_picker = widgets.DatePicker(description='Select Date', value=datetime(2024, 6, 24))
 generate_button = widgets.Button(description='Generate Graph', button_style='success')
 generate_button.style.button_color = '#00539B'
 output = widgets.Output()

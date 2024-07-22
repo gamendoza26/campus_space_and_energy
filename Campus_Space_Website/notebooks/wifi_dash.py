@@ -3,12 +3,13 @@ import pandas as pd
 import ipywidgets as widgets
 from IPython.display import display, HTML
 import math
+from datetime import datetime
 
 # Widgets for user input
-start_date_picker = widgets.DatePicker(description='Start Date')
-start_time_picker = widgets.TimePicker(description='Start Time')
-end_date_picker = widgets.DatePicker(description='End Date')
-end_time_picker = widgets.TimePicker(description='End Time')
+start_date_picker = widgets.DatePicker(description='Start Date', value=datetime(2024, 6, 11))
+start_time_picker = widgets.TimePicker(description='Start Time', value=datetime.strptime('10:00', '%H:%M').time())
+end_date_picker = widgets.DatePicker(description='End Date', value=datetime(2024, 6, 15))
+end_time_picker = widgets.TimePicker(description='End Time', value=datetime.strptime('10:00', '%H:%M').time())
 interval_slider = widgets.FloatSlider(description='Interval (hrs)', min=0.25, max=24, step=0.25, value=1)
 generate_button = widgets.Button(description='Generate Graph', button_style='success')
 generate_button.style.button_color = '#00539B'
