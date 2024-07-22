@@ -4,10 +4,11 @@ import branca.colormap as cm
 import math
 import ipywidgets as widgets
 from IPython.display import display, clear_output
+from datetime import datetime
 
 # Widgets for user input
-date_picker = widgets.DatePicker(description='Select Date')
-time_picker = widgets.TimePicker(description='Select Time')
+date_picker = widgets.DatePicker(description='Select Date', value=datetime(2024, 6, 11))
+time_picker = widgets.TimePicker(description='Select Time', value=datetime.strptime('10:00', '%H:%M').time())
 generate_button = widgets.Button(description='Generate Graph', button_style='success')
 generate_button.style.button_color = '#00539B'
 
