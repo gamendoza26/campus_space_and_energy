@@ -1,3 +1,16 @@
+# How it works - Raspberry Pi: Python script that runs the CO2 polling (uart.py)
+From a sensor Atlas IoT(tm), the Raspberry Pi sends CO2 polled data to a Linux web server, using a FastAPI end point. Here's how it works:
+
+
+1. Log-in into the Pi:
+- ssh codeplus-1@codeplus-1.local
+- ssh codeplus-2@codeplus-2.local	
+
+2. cd into the Raspberry-Pi-Sample-Code folder
+
+3. Run the file uartfastapi.py
+- Available in the folder /
+
 # rest-api-docker-compose
 Example of using docker-compose to orchestrate deployments and interconnections between multiple containers. In this projecty we have a FastAPI web container, a Postgres database container, and a PgAdmin container.
 
